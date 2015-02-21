@@ -5,21 +5,21 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/trusty64"
-  
-  config.vm.define "host1" do |host1|
-      host1.vm.provision "shell" do |s|
-         s.path = "install.sh"
-      end
-      host1.vm.network :private_network, ip: "192.168.10.2"
-  end
-  
-  config.vm.define "host2" do |host2|
-     host2.vm.provision "shell" do |s|
-        s.path = "install.sh"
-        s.args = ['true']
-     end
-      host2.vm.network :private_network, ip: "192.168.10.3"
-  end
-  # config.vm.network :forwarded_port, guest: 80, host: 8080
+    config.vm.box = "ubuntu/trusty64"
+
+    File.open("./hosts", "r") do |file_handle|
+        count = file_handle.count
+        file_handle.rewind
+        file_handle.each_with_index do |server, index|
+            config.vm.define server.split(' ').last do |host|
+                host.vm.provision "shell" do |s|
+                   s.path = "install.sh"
+                   if (index + 1) == count
+                      s.args = ['true']
+                   end
+                end
+                host.vm.network :private_network, ip: server.split(' ').first
+            end
+        end
+    end
 end
