@@ -8,6 +8,10 @@ Each host is running ubuntu 14.04.
 
 Docker is automatically installed on each host and setup to listen on ANY ip and port 8018 this is to make connecting to the docker deamons externally much easier, however configured in this way there is NO security around the docker api endpoint. For dev this is no major issue but DO NOT use these scripts as an example of how to configure docker in production.
 
+*NEW* Docker Swarm is now also installed and configured. It is installed onto the host with the highest ip numerically, listening on port 2735 to access (assuming 4 hosts) use:
+
+`docker -H 192.18.10.5:2735 info`
+
 All the hosts also have a shared networked filesystem provided by glusterfs, this is mounted at /mnt/gluster and is a good place to put your containers volumes to enable easy migration of containers between cluster hosts. Be careful when sharing a volume between multiple containers, some systems may not work correctly if you do (eg mysql) 
 
 # How to use
