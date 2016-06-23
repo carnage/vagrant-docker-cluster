@@ -1,13 +1,9 @@
 #!/bin/sh
 
-apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
-echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list
-
 apt-get update
-apt-get install -q -y glusterfs-server lxc-docker
+apt-get install -q -y glusterfs-server curl
 
-cp /vagrant/docker-defaults /etc/default/docker
-service docker restart
+curl -sSL https://experimental.docker.com/ | sh
 
 cp /vagrant/hosts /etc/hosts
 
@@ -38,11 +34,5 @@ if [ -n "$1" ]
         gluster volume create gv0 replica $REPLICA transport tcp $BRICKS force
         gluster volume start gv0
 
-        wget https://github.com/docker/swarm-library-image/blob/3c2dd0f73b7351744af64efb38e4fa5a015cc114/swarm?raw=true -O /usr/bin/swarm
-        chmod +x /usr/bin/swarm
-
-        cp /vagrant/swarm.conf /etc/init/swarm.conf
-        echo "SWARM_OPTS=\"-H 0.0.0.0:2735 nodes://192.168.10.[2:$HIGH_IP]:8018\"" > /etc/default/swarm
         initctl reload-configuration
-        service swarm start
 fi
